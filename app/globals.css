@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+body {
+  background: linear-gradient(135deg, #F4F4F9 0%, #B0B5C1 100%);
+  background-attachment: fixed;
+  background-size: cover;
+}
