@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Calendar Genie</title>
+  <style>
+    body {
+      width: 300px;
+      padding: 16px;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    button {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      background: #4A90E2;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    button:hover {
+      background: #357ABD;
+    }
+    .status {
+      color: #666;
+      font-size: 14px;
+      text-align: center;
+    }
+    .loading {
+      display: none;
+      text-align: center;
+    }
+    .loading.active {
+      display: block;
+    }
+  </style>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <button id="captureBtn">Capture Screenshot 📸</button>
+    <div id="loading" class="loading">
+      Processing... ✨
+    </div>
+    <div id="status" class="status"></div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html> 
