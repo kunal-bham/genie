@@ -13,6 +13,12 @@ const openai = new OpenAI({
 });
 
 export async function POST(request: Request) {
+  // Add CORS headers
+  const response = NextResponse.next();
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+
   try {
     console.log('\n🚀 Starting process-screenshots endpoint');
     const formData = await request.formData();
@@ -134,4 +140,17 @@ export async function POST(request: Request) {
       error: error instanceof Error ? error.message : 'Failed to process images' 
     }, { status: 500 });
   }
+}
+
+// Handle OPTIONS requests for CORS preflight
+export async function OPTIONS(request: Request) {
+  const response = new NextResponse(null, {
+    status: 200,
+  });
+  
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+  
+  return response;
 }
