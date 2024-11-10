@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const statusDiv = document.getElementById('status');
   
   // Add paste button
-  pasteBtn.innerHTML = 'Paste Screenshot 📋';
+  pasteBtn.innerHTML = 'Paste Screenshot';
   pasteBtn.className = captureBtn.className;
   captureBtn.parentNode.insertBefore(pasteBtn, captureBtn.nextSibling);
   
