@@ -4,35 +4,90 @@
   <title>Calendar Genie</title>
   <style>
     body {
-      width: 300px;
+      width: 320px;
       padding: 16px;
       font-family: system-ui, -apple-system, sans-serif;
+      background: linear-gradient(-45deg, #0A1128, #1B3B6F, #065A82, #1B3B6F);
+      background-size: 400% 400%;
+      animation: gradient 15s ease infinite;
+      margin: 0;
+      color: #fff;
     }
+
+    @keyframes gradient {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
     .container {
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
+    .header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .title {
+      font-size: 24px;
+      font-weight: 800;
+      margin: 0;
+      background: linear-gradient(to right, #fff, #ffd700);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
     button {
-      padding: 8px 16px;
-      border-radius: 8px;
+      padding: 12px 16px;
+      border-radius: 12px;
       border: none;
-      background: #4A90E2;
+      background: linear-gradient(135deg, #4CC9F0, #4895EF);
       color: white;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s;
+      font-weight: 600;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     button:hover {
-      background: #357ABD;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
     }
     .status {
-      color: #666;
+      color: #fff;
       font-size: 14px;
       text-align: center;
+      padding: 8px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.1);
     }
     .loading {
       display: none;
       text-align: center;
+      padding: 12px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      animation: pulse 2s infinite;
     }
     .loading.active {
       display: block;
@@ -40,29 +95,37 @@
     .hotkey-info {
       margin-top: 12px;
       font-size: 12px;
-      color: #666;
+      color: rgba(255,255,255,0.8);
       text-align: center;
+      padding: 8px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      backdrop-filter: blur(5px);
     }
-    .button-container {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
     }
   </style>
-  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
   <div class="container">
+    <div class="header">
+      <h1 class="title">Calendar Genie</h1>
+    </div>
     <div class="button-container">
-      <button id="captureBtn">Capture Screenshot 📸</button>
-      <!-- Paste button will be inserted here by JavaScript -->
+      <button id="captureBtn">
+        <span>📸</span> Capture Screenshot
+      </button>
+      <!-- Paste button will be added here by JS -->
     </div>
     <div id="loading" class="loading">
-      Processing... ✨
+      <span>✨ Summoning Calendar Magic...</span>
     </div>
     <div id="status" class="status"></div>
     <div class="hotkey-info">
-      Pro tip: Use Ctrl+Shift+V (⌘+Shift+V on Mac) to quickly process a screenshot from your clipboard!
+      Pro tip: Use Ctrl+Shift+V (⌘+Shift+V on Mac) to quickly process a screenshot!
     </div>
   </div>
   <script src="popup.js"></script>
