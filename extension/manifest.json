@@ -12,6 +12,13 @@
     "notifications"
   ],
   "commands": {
+    "open-popup": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+K",
+        "mac": "Command+Shift+K"
+      },
+      "description": "Open Calendar Genie"
+    },
     "process-clipboard": {
       "suggested_key": {
         "default": "Ctrl+Shift+V",
@@ -26,13 +33,8 @@
     "https://*.vercel.app/*"
   ],
   "background": {
-    "service_worker": "background.js",
-    "type": "module"
+    "service_worker": "background.js"
   },
-  "web_accessible_resources": [{
-    "resources": ["paste.html"],
-    "matches": ["<all_urls>"]
-  }],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

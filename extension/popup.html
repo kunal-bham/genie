@@ -107,6 +107,80 @@
       50% { opacity: 1; }
       100% { opacity: 0.6; }
     }
+    .settings-link {
+      margin-top: 12px;
+      text-align: center;
+    }
+    
+    .settings-button {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.8);
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.3s;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+    
+    .settings-button:hover {
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+
+    .processing-overlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .processing-overlay.active {
+      display: flex;
+    }
+
+    .progress-bar {
+      width: 80%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+      margin: 15px 0;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4CC9F0, #4895EF);
+      width: 0%;
+      transition: width 0.3s ease;
+      animation: progress 2s infinite;
+    }
+
+    @keyframes progress {
+      0% { width: 0%; }
+      50% { width: 70%; }
+      100% { width: 100%; }
+    }
+
+    .processing-text {
+      color: white;
+      font-size: 14px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
@@ -116,16 +190,30 @@
     </div>
     <div class="button-container">
       <button id="captureBtn">
-        <span></span> Capture Screenshot
+        <span>📸</span> Capture Screenshot
       </button>
-      <!-- Paste button will be added here by JS -->
+      <button id="pasteBtn">
+        <span>📋</span> Paste Screenshot
+      </button>
     </div>
     <div id="loading" class="loading">
       <span> Summoning Calendar Magic...</span>
     </div>
     <div id="status" class="status"></div>
     <div class="hotkey-info">
-      Pro tip: Use Cmd+Shift+V (Ctrl+Shift+V on Windows) to quickly process a screenshot!
+      Pro tip: Use ⌘+Shift+V (Ctrl+Shift+V) to quickly process a screenshot!
+    </div>
+    <div class="settings-link">
+      <button id="openSettings" class="settings-button">
+        ⚙️ Customize Shortcuts
+      </button>
+    </div>
+    <div id="processingOverlay" class="processing-overlay">
+      <div class="processing-text">Processing Screenshot...</div>
+      <div class="progress-bar">
+        <div class="progress-bar-fill"></div>
+      </div>
+      <div class="processing-text" id="processingStatus">Reading clipboard...</div>
     </div>
   </div>
   <script src="popup.js"></script>

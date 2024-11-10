@@ -121,7 +121,7 @@ export default function Home() {
           <span className="ml-4 animate-bounce inline-block">🧞‍♂️</span>
         </h1>
         <p className="text-cloud-white text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
-          Transform your event screenshots into calendar magic! ✨
+          Transform your event screenshots into calendar magic! 
           <br />
           <span className="font-medium text-golden-lamp">No more manual calendar entries.</span>
         </p>
@@ -134,7 +134,7 @@ export default function Home() {
             <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto">
               <div className="bg-cloud-white/95 backdrop-blur-md p-8 rounded-3xl shadow-2xl">
                 <h2 className="text-2xl font-extrabold text-midnight-navy mb-8 text-center">
-                  Your wish is my command 🎭
+                  Your wish is my command.
                 </h2>
                 
                 {/* Upload Area */}
