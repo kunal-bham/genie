@@ -37,16 +37,33 @@
     .loading.active {
       display: block;
     }
+    .hotkey-info {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #666;
+      text-align: center;
+    }
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
   </style>
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <button id="captureBtn">Capture Screenshot 📸</button>
+    <div class="button-container">
+      <button id="captureBtn">Capture Screenshot 📸</button>
+      <!-- Paste button will be inserted here by JavaScript -->
+    </div>
     <div id="loading" class="loading">
       Processing... ✨
     </div>
     <div id="status" class="status"></div>
+    <div class="hotkey-info">
+      Pro tip: Use Ctrl+Shift+V (⌘+Shift+V on Mac) to quickly process a screenshot from your clipboard!
+    </div>
   </div>
   <script src="popup.js"></script>
 </body>

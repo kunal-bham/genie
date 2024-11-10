@@ -7,13 +7,28 @@
     "activeTab",
     "scripting",
     "storage",
-    "tabs"
+    "tabs",
+    "clipboardRead",
+    "notifications"
   ],
+  "commands": {
+    "process-clipboard": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+V",
+        "mac": "Command+Shift+V"
+      },
+      "description": "Process clipboard image"
+    }
+  },
   "host_permissions": [
     "http://localhost:3000/*",
     "https://localhost:3000/*",
     "https://*.vercel.app/*"
   ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
