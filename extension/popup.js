@@ -72,12 +72,14 @@ document.addEventListener('DOMContentLoaded', function() {
       const data = await result.json();
       
       if (data.success && data.result.links.length > 0) {
-        statusDiv.textContent = 'Success! Opening calendar...';
-        // Open the first calendar link in a new tab
-        chrome.tabs.create({ url: data.result.links[0] });
+        statusDiv.textContent = 'Success! Opening calendar links...';
+        // Open all links in new tabs
+        for (const link of data.result.links) {
+          chrome.tabs.create({ url: link });
+        }
         setTimeout(() => window.close(), 1000);
       } else {
-        statusDiv.textContent = 'No calendar event found in the screenshot';
+        statusDiv.textContent = 'No calendar events found in the screenshot';
       }
     } catch (error) {
       console.error('Error:', error);
@@ -144,11 +146,14 @@ document.addEventListener('DOMContentLoaded', function() {
       const data = await result.json();
       
       if (data.success && data.result.links.length > 0) {
-        statusDiv.textContent = 'Success! Opening calendar...';
-        chrome.tabs.create({ url: data.result.links[0] });
+        statusDiv.textContent = 'Success! Opening calendar links...';
+        // Open all links in new tabs
+        for (const link of data.result.links) {
+          chrome.tabs.create({ url: link });
+        }
         setTimeout(() => window.close(), 1000);
       } else {
-        statusDiv.textContent = 'No calendar event found in the screenshot';
+        statusDiv.textContent = 'No calendar events found in the screenshot';
       }
     } catch (error) {
       console.error('Error:', error);

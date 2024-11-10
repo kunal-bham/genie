@@ -29,6 +29,10 @@
     "service_worker": "background.js",
     "type": "module"
   },
+  "web_accessible_resources": [{
+    "resources": ["paste.html"],
+    "matches": ["<all_urls>"]
+  }],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
