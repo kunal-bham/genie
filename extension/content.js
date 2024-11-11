@@ -1,10 +1,42 @@
-// Listen for messages from the popup
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "capture") {
-    captureVisibleTab().then(dataUrl => {
-      sendResponse({ imageData: dataUrl });
-    });
-    return true; // Required for async response
+// Listen for messages from the background script
+chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+  if (request.action === "readClipboard") {
+    try {
+      // Send processing status
+      chrome.runtime.sendMessage({
+        type: 'PROCESSING_STATUS',
+        status: 'start'
+      });
+
+      // Read from clipboard
+      const clipboardItems = await navigator.clipboard.read();
+      let imageBlob = null;
+
+      // Find image in clipboard
+      for (const clipboardItem of clipboardItems) {
+        if (clipboardItem.types.includes('image/png')) {
+          imageBlob = await clipboardItem.getType('image/png');
+          break;
+        }
+      }
+
+      if (!imageBlob) {
+        throw new Error('No image found in clipboard');
+      }
+
+      // Send the blob back to background script
+      chrome.runtime.sendMessage({
+        type: 'SCREENSHOT_CAPTURED',
+        imageBlob: imageBlob
+      });
+    } catch (error) {
+      console.error('Error reading clipboard:', error);
+      chrome.runtime.sendMessage({
+        type: 'PROCESSING_STATUS',
+        status: 'error',
+        error: error.message || 'Failed to read clipboard'
+      });
+    }
   }
 });
 

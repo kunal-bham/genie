@@ -1,51 +1,33 @@
 {
   "manifest_version": 3,
-  "name": "Calendar Genie Extension",
+  "name": "Calendar Genie",
   "version": "1.0",
-  "description": "Quickly capture screenshots and create calendar events",
   "permissions": [
     "activeTab",
     "scripting",
-    "storage",
     "tabs",
-    "clipboardRead",
-    "notifications"
+    "clipboardRead"
   ],
-  "commands": {
-    "open-popup": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+K",
-        "mac": "Command+Shift+K"
-      },
-      "description": "Open Calendar Genie"
-    },
-    "process-clipboard": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+V",
-        "mac": "Command+Shift+V"
-      },
-      "description": "Process clipboard image"
-    }
-  },
   "host_permissions": [
-    "http://localhost:3000/*",
-    "https://localhost:3000/*",
-    "https://*.vercel.app/*"
+    "http://localhost:3000/*"
   ],
   "background": {
     "service_worker": "background.js"
   },
-  "action": {
-    "default_popup": "popup.html",
-    "default_icon": {
-      "16": "icons/icon16.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["html2canvas.min.js", "content.js"]
+  }],
+  "commands": {
+    "process-clipboard": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y"
+      },
+      "description": "Process clipboard screenshot"
     }
   },
-  "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
+  "action": {
+    "default_popup": "popup.html"
   }
 } 

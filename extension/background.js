@@ -4,80 +4,24 @@ chrome.commands.onCommand.addListener(async (command) => {
   
   if (command === "process-clipboard") {
     try {
-      // Get clipboard data directly
-      const clipboardItems = await navigator.clipboard.read();
-      let imageBlob = null;
-
-      // Find image in clipboard
-      for (const clipboardItem of clipboardItems) {
-        if (clipboardItem.types.includes('image/png')) {
-          imageBlob = await clipboardItem.getType('image/png');
-          break;
-        }
-      }
-
-      if (!imageBlob) {
-        throw new Error('No image found in clipboard');
-      }
-
-      // Create form data and send to API
-      const formData = new FormData();
-      formData.append('file', imageBlob, 'screenshot.png');
-      formData.append('timezone', Intl.DateTimeFormat().resolvedOptions().timeZone);
-
-      // Open popup first
-      await chrome.action.openPopup();
-
-      // Send message to popup to show processing state
-      chrome.runtime.sendMessage({
-        type: 'PROCESSING_STATUS',
-        status: 'start'
-      });
-
-      // Send to Calendar Genie API
-      const response = await fetch('http://localhost:3000/api/process-screenshots', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Accept': 'application/json',
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
+      // Open popup with source parameter
+      const popup = await chrome.action.openPopup();
       
-      if (data.success && data.result.links && data.result.links.length > 0) {
-        // Send success message to popup
-        chrome.runtime.sendMessage({
-          type: 'PROCESSING_STATUS',
-          status: 'success'
-        });
-
-        // Open all calendar links in new tabs
-        data.result.links.forEach(link => {
-          chrome.tabs.create({ url: link, active: false });
-        });
-      } else {
-        throw new Error('No calendar events found in the screenshot');
-      }
+      // Wait a brief moment for the popup to initialize
+      setTimeout(() => {
+        // Send message to trigger paste
+        chrome.runtime.sendMessage({ action: "triggerPaste" });
+      }, 100);
+      
     } catch (error) {
       console.error('Error:', error);
-      // Send error message to popup
-      chrome.runtime.sendMessage({
-        type: 'PROCESSING_STATUS',
-        status: 'error',
-        error: error.message || 'Failed to process screenshot'
-      });
     }
   }
 });
 
-// Listen for messages from popup
+// Listen for messages from content script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === 'PROCESS_IMAGE') {
+  if (message.type === 'SCREENSHOT_CAPTURED') {
     processImage(message.imageBlob);
   }
 });
@@ -129,6 +73,12 @@ async function processImage(imageBlob) {
     const data = await response.json();
     
     if (data.success && data.result.links && data.result.links.length > 0) {
+      // Send success message to popup
+      chrome.runtime.sendMessage({
+        type: 'PROCESSING_STATUS',
+        status: 'success'
+      });
+
       // Debug log for each calendar link
       data.result.links.forEach((link, index) => {
         console.log(`\n📅 Calendar Event ${index + 1}:`);
@@ -159,6 +109,12 @@ async function processImage(imageBlob) {
     }
   } catch (error) {
     console.error('Error:', error);
+    // Send error message to popup
+    chrome.runtime.sendMessage({
+      type: 'PROCESSING_STATUS',
+      status: 'error',
+      error: error.message || 'Failed to process screenshot'
+    });
     throw error;
   }
 } 
