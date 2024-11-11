@@ -26,9 +26,9 @@ TIMEZONE HANDLING (CRITICAL):
 CRITICAL UTC CONVERSION STEPS:
 1. Take the local time (CT)
 2. ADD 6 hours to get UTC
-3. If the time goes past midnight:
-   - Use the NEXT day's date
-   - Keep the calculated UTC time
+3. If the resulting UTC time is past midnight:
+   - If the local time is before midnight, keep the current date
+   - If the local time is at or after midnight, increment the date by one day
 4. Format as YYYYMMDDTHHmmSSZ
 
 DATE AND TIME RULES:
