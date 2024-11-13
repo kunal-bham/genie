@@ -14,10 +14,6 @@
   "background": {
     "service_worker": "background.js"
   },
-  "content_scripts": [{
-    "matches": ["<all_urls>"],
-    "js": ["html2canvas.min.js", "content.js"]
-  }],
   "commands": {
     "process-clipboard": {
       "suggested_key": {

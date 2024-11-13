@@ -1,59 +1,97 @@
-// Listen for commands
-chrome.commands.onCommand.addListener(async (command) => {
-  console.log('Command received:', command);
+// Constants for testing and debugging
+const DEBUG = true;
+const TEST_POINTS = {
+  COMMAND_RECEIVED: 'command_received',
+  CLIPBOARD_READ: 'clipboard_read',
+  IMAGE_FOUND: 'image_found',
+  PROCESSING_STARTED: 'processing_started',
+  PROCESSING_COMPLETED: 'processing_completed'
+};
+
+// Test tracking
+let testResults = new Map();
+
+// Debug logging helper
+function debugLog(point, success, message) {
+  if (!DEBUG) return;
   
-  if (command === "process-clipboard") {
-    try {
-      // Open popup with source parameter
-      const popup = await chrome.action.openPopup();
-      
-      // Wait a brief moment for the popup to initialize
-      setTimeout(() => {
-        // Send message to trigger paste
-        chrome.runtime.sendMessage({ action: "triggerPaste" });
-      }, 100);
-      
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }
-});
-
-// Listen for messages from content script
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === 'SCREENSHOT_CAPTURED') {
-    processImage(message.imageBlob);
-  }
-});
-
-function formatTimeForDebug(dateString) {
-  try {
-    const date = new Date(dateString);
-    return {
-      original: dateString,
-      formatted: date.toLocaleTimeString('en-US', { 
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true,
-        timeZoneName: 'short'
-      }),
-      date: date.toLocaleDateString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      })
-    };
-  } catch (error) {
-    return {
-      original: dateString,
-      error: 'Invalid date format'
-    };
+  testResults.set(point, success);
+  console.log(`${success ? '✅' : '❌'} ${point}: ${message}`);
+  
+  if (!success) {
+    console.error(`Failed at test point: ${point}`);
+    console.trace();
   }
 }
 
+// Main command listener
+chrome.commands.onCommand.addListener(async (command) => {
+  if (command === "process-clipboard") {
+    debugLog(TEST_POINTS.COMMAND_RECEIVED, true, 'Hotkey pressed');
+    await handleClipboardProcessing();
+  }
+});
+
+// Main processing function
+async function handleClipboardProcessing() {
+  try {
+    // Get active tab
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab?.id) {
+      debugLog(TEST_POINTS.COMMAND_RECEIVED, false, 'No active tab found');
+      return;
+    }
+
+    // Execute clipboard reading in content script context
+    const result = await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: async () => {
+        try {
+          const items = await navigator.clipboard.read();
+          for (const item of items) {
+            if (item.types.includes('image/png')) {
+              const blob = await item.getType('image/png');
+              // Convert the blob to base64
+              return await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.readAsDataURL(blob);
+              });
+            }
+          }
+          return null;
+        } catch (error) {
+          console.error('Clipboard read error:', error);
+          return null;
+        }
+      }
+    });
+
+    // Check if we got an image
+    const base64Data = result[0]?.result;
+    if (!base64Data) {
+      debugLog(TEST_POINTS.CLIPBOARD_READ, false, 'No image found in clipboard');
+      return;
+    }
+    debugLog(TEST_POINTS.IMAGE_FOUND, true, 'Image found in clipboard');
+
+    // Convert base64 back to blob
+    const imageBlob = await fetch(base64Data).then(r => r.blob());
+
+    // Process the image
+    debugLog(TEST_POINTS.PROCESSING_STARTED, true, 'Starting image processing');
+    await processImage(imageBlob);
+
+  } catch (error) {
+    debugLog(TEST_POINTS.PROCESSING_STARTED, false, `Error: ${error.message}`);
+    console.error('Processing error:', error);
+  }
+}
+
+// Image processing function
 async function processImage(imageBlob) {
   try {
+    console.log('Creating FormData with blob type:', imageBlob.type);
     const formData = new FormData();
     formData.append('file', imageBlob, 'screenshot.png');
     formData.append('timezone', Intl.DateTimeFormat().resolvedOptions().timeZone);
@@ -61,9 +99,7 @@ async function processImage(imageBlob) {
     const response = await fetch('http://localhost:3000/api/process-screenshots', {
       method: 'POST',
       body: formData,
-      headers: {
-        'Accept': 'application/json',
-      }
+      headers: { 'Accept': 'application/json' }
     });
 
     if (!response.ok) {
@@ -72,49 +108,38 @@ async function processImage(imageBlob) {
 
     const data = await response.json();
     
-    if (data.success && data.result.links && data.result.links.length > 0) {
-      // Send success message to popup
-      chrome.runtime.sendMessage({
-        type: 'PROCESSING_STATUS',
-        status: 'success'
-      });
-
-      // Debug log for each calendar link
-      data.result.links.forEach((link, index) => {
-        console.log(`\n📅 Calendar Event ${index + 1}:`);
-        
-        // Parse the URL to get the dates parameter
-        const url = new URL(link);
-        const dates = url.searchParams.get('dates');
-        const text = url.searchParams.get('text');
-        
-        if (dates) {
-          const [startTime, endTime] = dates.split('/');
-          console.log('Event:', decodeURIComponent(text || 'Unnamed Event'));
-          console.log('Start Time:', formatTimeForDebug(startTime));
-          console.log('End Time:', formatTimeForDebug(endTime));
-          console.log('Timezone:', url.searchParams.get('ctz'));
-          console.log('Full URL:', link);
-          console.log('-------------------');
-        }
-      });
-
-      // Open all calendar links in new tabs
+    if (data.success && data.result.links?.length > 0) {
+      debugLog(TEST_POINTS.PROCESSING_COMPLETED, true, 
+        `Successfully processed ${data.result.links.length} calendar events`);
+      
+      // Open calendar links
       data.result.links.forEach(link => {
         chrome.tabs.create({ url: link, active: false });
       });
+      
+      // Log success details
+      data.result.links.forEach((link, index) => {
+        const url = new URL(link);
+        console.log(`📅 Calendar Event ${index + 1}:`,
+          '\nTitle:', decodeURIComponent(url.searchParams.get('text') || 'Untitled'),
+          '\nTimezone:', url.searchParams.get('ctz'));
+      });
+
       return true;
     } else {
-      throw new Error('No calendar events found in the screenshot');
+      throw new Error('No calendar events found');
     }
   } catch (error) {
-    console.error('Error:', error);
-    // Send error message to popup
-    chrome.runtime.sendMessage({
-      type: 'PROCESSING_STATUS',
-      status: 'error',
-      error: error.message || 'Failed to process screenshot'
-    });
+    debugLog(TEST_POINTS.PROCESSING_COMPLETED, false, `Error: ${error.message}`);
     throw error;
   }
+}
+
+// Test results helper
+function getTestResults() {
+  console.log('\n🧪 Test Results:');
+  for (const [point, success] of testResults) {
+    console.log(`${success ? '✅' : '❌'} ${point}`);
+  }
+  return Array.from(testResults.values()).every(Boolean);
 } 
