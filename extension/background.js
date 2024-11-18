@@ -28,7 +28,30 @@ function debugLog(point, success, message) {
 chrome.commands.onCommand.addListener(async (command) => {
   if (command === "process-clipboard") {
     debugLog(TEST_POINTS.COMMAND_RECEIVED, true, 'Hotkey pressed');
-    await handleClipboardProcessing();
+    
+    try {
+      // Get active tab first
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (!tab?.id) {
+        debugLog(TEST_POINTS.COMMAND_RECEIVED, false, 'No active tab found');
+        return;
+      }
+
+      // Open popup first
+      console.log('Opening popup...');
+      await chrome.action.openPopup();
+
+      // Send message to trigger paste
+      chrome.runtime.sendMessage({
+        type: 'TRIGGER_PASTE_BUTTON'
+      });
+
+      debugLog(TEST_POINTS.COMMAND_RECEIVED, true, 'Popup opened and paste triggered');
+
+    } catch (error) {
+      console.error('Error in command listener:', error);
+      debugLog(TEST_POINTS.COMMAND_RECEIVED, false, `Error: ${error.message}`);
+    }
   }
 });
 
