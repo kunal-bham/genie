@@ -48,6 +48,8 @@ Date Rules:
   * If month > current month: use ${currentYear}
   * If same month: compare day to today
 - Never schedule events in the past
+- End date must be the same day as or after the start date
+- If end date is before start date, use start date as end date
 
 Time Rules:
 - For "3:00" without AM/PM:
