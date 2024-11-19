@@ -30,6 +30,8 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     } else if (message.type === 'TRIGGER_PASTE_BUTTON') {
       handlePaste();
+    } else if (message.type === 'TRIGGER_CAPTURE_BUTTON') {
+      handleCapture();
     }
   });
 

@@ -39,8 +39,8 @@ chrome.runtime.onConnect.addListener((port) => {
 
 // Main command listener
 chrome.commands.onCommand.addListener(async (command) => {
-  if (command === "process-clipboard") {
-    debugLog(TEST_POINTS.COMMAND_RECEIVED, true, 'Hotkey pressed');
+  if (command === "process-clipboard" || command === "capture-screenshot") {
+    debugLog(TEST_POINTS.COMMAND_RECEIVED, true, `Hotkey pressed: ${command}`);
     
     try {
       // If popup is already open, close it
@@ -61,12 +61,12 @@ chrome.commands.onCommand.addListener(async (command) => {
       console.log('Opening popup...');
       await chrome.action.openPopup();
 
-      // Send message to trigger paste
+      // Send appropriate message based on command
       chrome.runtime.sendMessage({
-        type: 'TRIGGER_PASTE_BUTTON'
+        type: command === "process-clipboard" ? 'TRIGGER_PASTE_BUTTON' : 'TRIGGER_CAPTURE_BUTTON'
       });
 
-      debugLog(TEST_POINTS.COMMAND_RECEIVED, true, 'Popup opened and paste triggered');
+      debugLog(TEST_POINTS.COMMAND_RECEIVED, true, 'Popup opened and action triggered');
 
     } catch (error) {
       console.error('Error in command listener:', error);
