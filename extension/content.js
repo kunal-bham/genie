@@ -1,41 +1,47 @@
-// Listen for messages from the background script
+// Constants
+const SUPPORTED_IMAGE_TYPES = ['image/png'];
+
+// Utility Functions
+const handleClipboardRead = async () => {
+  try {
+    const clipboardItems = await navigator.clipboard.read();
+    for (const item of clipboardItems) {
+      if (item.types.some(type => SUPPORTED_IMAGE_TYPES.includes(type))) {
+        return await item.getType('image/png');
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error('Clipboard read error:', error);
+    return null;
+  }
+};
+
+const sendStatusMessage = (status, error = null) => {
+  chrome.runtime.sendMessage({
+    type: 'PROCESSING_STATUS',
+    status,
+    ...(error && { error })
+  });
+};
+
+// Message Handler
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   if (request.action === "readClipboard") {
     try {
-      // Send processing status
-      chrome.runtime.sendMessage({
-        type: 'PROCESSING_STATUS',
-        status: 'start'
-      });
-
-      // Read from clipboard
-      const clipboardItems = await navigator.clipboard.read();
-      let imageBlob = null;
-
-      // Find image in clipboard
-      for (const clipboardItem of clipboardItems) {
-        if (clipboardItem.types.includes('image/png')) {
-          imageBlob = await clipboardItem.getType('image/png');
-          break;
-        }
-      }
-
+      sendStatusMessage('start');
+      const imageBlob = await handleClipboardRead();
+      
       if (!imageBlob) {
         throw new Error('No image found in clipboard');
       }
 
-      // Send the blob back to background script
       chrome.runtime.sendMessage({
         type: 'SCREENSHOT_CAPTURED',
-        imageBlob: imageBlob
+        imageBlob
       });
     } catch (error) {
-      console.error('Error reading clipboard:', error);
-      chrome.runtime.sendMessage({
-        type: 'PROCESSING_STATUS',
-        status: 'error',
-        error: error.message || 'Failed to read clipboard'
-      });
+      sendStatusMessage('error', error.message || 'Failed to read clipboard');
     }
   }
 });
