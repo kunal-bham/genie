@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
-  const captureBtn = document.getElementById('captureBtn');
   const pasteBtn = document.getElementById('pasteBtn');
   const statusDiv = document.getElementById('status');
   const overlay = document.getElementById('processingOverlay');
   const processingStatus = document.getElementById('processingStatus');
+  const statusMessage = document.getElementById('statusMessage');
 
   // Listen for messages from background script
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (message.status === 'start') {
         overlay.classList.add('active');
         processingStatus.textContent = 'Reading clipboard...';
+        statusMessage.classList.remove('active', 'error'); // Hide any previous error
       } else if (message.status === 'processing') {
         processingStatus.textContent = 'Processing image...';
       } else if (message.status === 'success') {
@@ -19,37 +20,42 @@ document.addEventListener('DOMContentLoaded', function() {
           overlay.classList.remove('active');
         }, 1000);
       } else if (message.status === 'error') {
-        processingStatus.textContent = message.error || 'Error processing screenshot';
-        statusDiv.textContent = message.error || 'Error processing screenshot';
-        setTimeout(() => {
-          overlay.classList.remove('active');
-        }, 2000);
+        overlay.classList.remove('active');
+        statusMessage.textContent = message.error;
+        statusMessage.classList.add('active', 'error');
       }
     } else if (message.type === 'TRIGGER_PASTE_BUTTON') {
-      // Automatically trigger paste when shortcut is used
       handlePaste();
     }
   });
 
   async function handlePaste() {
     try {
-      overlay.classList.add('active');
-      processingStatus.textContent = 'Reading clipboard...';
-      
+      // Hide any previous error message
+      statusMessage.classList.remove('active', 'error');
+
+      // Check clipboard before showing loading state
       const clipboardItems = await navigator.clipboard.read();
-      let imageBlob = null;
+      let hasImage = false;
 
       for (const clipboardItem of clipboardItems) {
         if (clipboardItem.types.includes('image/png')) {
-          imageBlob = await clipboardItem.getType('image/png');
+          hasImage = true;
           break;
         }
       }
 
-      if (!imageBlob) {
-        throw new Error('No image found in clipboard');
+      if (!hasImage) {
+        statusMessage.textContent = 'No screenshot found';
+        statusMessage.classList.add('active', 'error');
+        return;
       }
 
+      // If we have an image, proceed with loading state
+      overlay.classList.add('active');
+      processingStatus.textContent = 'Reading clipboard...';
+      
+      const imageBlob = await clipboardItems[0].getType('image/png');
       processingStatus.textContent = 'Processing image...';
       
       // Create form data and send to API
@@ -83,40 +89,27 @@ document.addEventListener('DOMContentLoaded', function() {
           overlay.classList.remove('active');
         }, 1000);
       } else {
-        throw new Error('No calendar events found in the screenshot');
+        overlay.classList.remove('active');
+        statusMessage.textContent = 'No events found in screenshot';
+        statusMessage.classList.add('active', 'error');
       }
 
     } catch (error) {
       console.error('Error:', error);
-      processingStatus.textContent = error.message || 'Failed to process screenshot';
-      statusDiv.textContent = error.message || 'Failed to process screenshot';
-      setTimeout(() => {
-        overlay.classList.remove('active');
-      }, 2000);
+      overlay.classList.remove('active');
+      
+      if (error.message === 'No image found in clipboard') {
+        statusMessage.textContent = 'No screenshot found';
+      } else if (error.message === 'No calendar events found in the screenshot') {
+        statusMessage.textContent = 'No events found in screenshot';
+      } else {
+        statusMessage.textContent = error.message || 'Failed to process screenshot';
+      }
+      
+      statusMessage.classList.add('active', 'error');
     }
   }
 
   // Add click handler for manual paste button
   pasteBtn.addEventListener('click', handlePaste);
-
-  // Add click handler for capture button
-  captureBtn.addEventListener('click', async () => {
-    try {
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      if (!tab.id) throw new Error('No active tab');
-
-      overlay.classList.add('active');
-      processingStatus.textContent = 'Capturing screenshot...';
-
-      await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        files: ['content.js']
-      });
-
-      chrome.tabs.sendMessage(tab.id, { action: "capture" });
-    } catch (error) {
-      console.error('Error:', error);
-      statusDiv.textContent = 'Error: Failed to capture screenshot';
-    }
-  });
 }); 

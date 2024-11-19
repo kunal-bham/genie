@@ -216,6 +216,29 @@
       font-size: 13px;
       opacity: 0.9;
     }
+
+    .status-message {
+      color: #fff;
+      font-size: 13px;
+      text-align: center;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 8px;
+      display: none; /* Hidden by default */
+    }
+
+    .status-message.error {
+      background: rgba(255, 99, 99, 0.1);
+      border-color: rgba(255, 99, 99, 0.2);
+    }
+
+    .status-message.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
   </style>
 </head>
 <body>
@@ -231,6 +254,9 @@
         </svg>
         Paste Screenshot
       </button>
+    </div>
+    <div id="statusMessage" class="status-message">
+      No screenshot found in clipboard
     </div>
     <div class="hotkey-info">
       Quick Shortcut: ⌘⇧Y (Ctrl+Shift+Y)
