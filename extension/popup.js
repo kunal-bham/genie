@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const processingStatus = document.getElementById('processingStatus');
   const statusMessage = document.getElementById('statusMessage');
   const captureBtn = document.getElementById('captureBtn');
-  const hotkeyInfo = document.querySelector('.hotkey-info');
+  const hotkeyInfo = document.getElementById('hotkeyInfo');
 
   // Fetch and display current shortcuts
   chrome.commands.getAll((commands) => {
@@ -37,9 +37,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update hotkey info display
     hotkeyInfo.innerHTML = `
-      ${formatShortcut(processCommand?.shortcut)} - Process Screenshot<br>
-      ${formatShortcut(captureCommand?.shortcut)} - Capture Screenshot
+      ${formatShortcut(captureCommand?.shortcut)} - Capture Screenshot<br>
+      ${formatShortcut(processCommand?.shortcut)} - Past Screenshot
     `;
+
+    // Update the instruction step text
+    const instructionStepTwo = document.querySelector('.instruction-step:nth-of-type(2) p');
+    if (instructionStepTwo) {
+      instructionStepTwo.textContent = `Use ${formatShortcut(processCommand?.shortcut)} to paste or ${formatShortcut(captureCommand?.shortcut)} to capture`;
+    }
   });
 
   // Listen for messages from background script
@@ -230,5 +236,25 @@ document.addEventListener('DOMContentLoaded', function() {
     chrome.tabs.create({
       url: 'chrome://extensions/shortcuts'
     });
+  });
+
+  // Add instructions modal handlers
+  const infoIcon = document.getElementById('infoIcon');
+  const instructionsModal = document.getElementById('instructionsModal');
+  const closeInstructions = document.getElementById('closeInstructions');
+
+  infoIcon.addEventListener('click', () => {
+    instructionsModal.classList.add('active');
+  });
+
+  closeInstructions.addEventListener('click', () => {
+    instructionsModal.classList.remove('active');
+  });
+
+  // Close modal when clicking outside
+  instructionsModal.addEventListener('click', (e) => {
+    if (e.target === instructionsModal) {
+      instructionsModal.classList.remove('active');
+    }
   });
 }); 
