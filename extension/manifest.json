@@ -6,7 +6,8 @@
     "activeTab",
     "scripting",
     "tabs",
-    "clipboardRead"
+    "clipboardRead",
+    "desktopCapture"
   ],
   "host_permissions": [
     "http://localhost:3000/*"

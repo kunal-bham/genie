@@ -24,12 +24,32 @@ function debugLog(point, success, message) {
   }
 }
 
+// Track popup state
+let isPopupOpen = false;
+
+// Listen for popup open/close
+chrome.runtime.onConnect.addListener((port) => {
+  if (port.name === 'popup') {
+    isPopupOpen = true;
+    port.onDisconnect.addListener(() => {
+      isPopupOpen = false;
+    });
+  }
+});
+
 // Main command listener
 chrome.commands.onCommand.addListener(async (command) => {
   if (command === "process-clipboard") {
     debugLog(TEST_POINTS.COMMAND_RECEIVED, true, 'Hotkey pressed');
     
     try {
+      // If popup is already open, close it
+      if (isPopupOpen) {
+        console.log('Popup already open, closing...');
+        window.close();
+        return;
+      }
+
       // Get active tab first
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       if (!tab?.id) {
@@ -37,7 +57,7 @@ chrome.commands.onCommand.addListener(async (command) => {
         return;
       }
 
-      // Open popup first
+      // Open popup
       console.log('Opening popup...');
       await chrome.action.openPopup();
 
