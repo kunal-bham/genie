@@ -8,6 +8,39 @@ document.addEventListener('DOMContentLoaded', function() {
   const processingStatus = document.getElementById('processingStatus');
   const statusMessage = document.getElementById('statusMessage');
   const captureBtn = document.getElementById('captureBtn');
+  const hotkeyInfo = document.querySelector('.hotkey-info');
+
+  // Fetch and display current shortcuts
+  chrome.commands.getAll((commands) => {
+    const processCommand = commands.find(cmd => cmd.name === "process-clipboard");
+    const captureCommand = commands.find(cmd => cmd.name === "capture-screenshot");
+
+    // Format shortcuts for display
+    const formatShortcut = (shortcut) => {
+      if (!shortcut) return 'Not Set';
+      
+      // Format for Mac
+      if (navigator.platform.includes('Mac')) {
+        return shortcut
+          .replace('Command', '⌘')
+          .replace('Shift', '⇧')
+          .replace('Alt', '⌥')
+          .replace('MacCtrl', '⌃');
+      }
+      
+      // Format for Windows/Linux
+      return shortcut
+        .replace('Ctrl', 'Ctrl')
+        .replace('Shift', 'Shift')
+        .replace('Alt', 'Alt');
+    };
+
+    // Update hotkey info display
+    hotkeyInfo.innerHTML = `
+      ${formatShortcut(processCommand?.shortcut)} - Process Screenshot<br>
+      ${formatShortcut(captureCommand?.shortcut)} - Capture Screenshot
+    `;
+  });
 
   // Listen for messages from background script
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -190,4 +223,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Add click handler for capture button
   captureBtn.addEventListener('click', handleCapture);
+
+  // Add click handler for settings button
+  const openSettings = document.getElementById('openSettings');
+  openSettings.addEventListener('click', () => {
+    chrome.tabs.create({
+      url: 'chrome://extensions/shortcuts'
+    });
+  });
 }); 

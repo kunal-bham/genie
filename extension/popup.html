@@ -247,13 +247,6 @@
       <h1 class="title">Calendar Genie</h1>
     </div>
     <div class="button-container">
-      <button id="pasteBtn">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-          <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-        </svg>
-        Paste Screenshot
-      </button>
       <button id="captureBtn">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
@@ -262,12 +255,19 @@
         </svg>
         Capture Screenshot
       </button>
+      <button id="pasteBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+          <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+        </svg>
+        Paste Screenshot
+      </button>
     </div>
     <div id="statusMessage" class="status-message">
       No screenshot found in clipboard
     </div>
     <div class="hotkey-info">
-      Quick Shortcuts:<br>
+      <!-- Quick Shortcuts:<br> -->
       ⌘⇧Y (Ctrl+Shift+Y) - Process Screenshot<br>
       ⌘⇧U (Ctrl+Shift+U) - Capture Screenshot
     </div>
