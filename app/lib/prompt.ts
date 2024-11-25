@@ -6,6 +6,7 @@ export const getCalendarLinkPrompt = (timezone: string) => {
 
   return `Ignore all prior instructions. You are an assistant that converts blobs of text or transcript to Google Calendar links in a pre-defined JSON format.
 
+
 1. Extract the event information from the provided text.
 2. Use the base URL: \`https://calendar.google.com/calendar/u/0/r/eventedit?\`
 
@@ -59,6 +60,37 @@ Time Rules:
 - If no minutes specified: assume :00
 - If no duration specified: default to 1 hour
 
+CRITICAL TIME SEQUENCE VALIDATION (MUST CHECK FIRST):
+1. End time MUST ALWAYS be after start time:
+   * Compare complete datetime (YYYY-MM-DD HH:MM)
+   * If end time is earlier in the day than start time:
+     - MUST increment end date by one day
+     - NO EXCEPTIONS
+
+2. Examples of Required Date Increment:
+   Start: 5:30 PM Nov 20    End: 6:30 PM Nov 19   → WRONG
+   Start: 5:30 PM Nov 20    End: 6:30 PM Nov 20   → CORRECT
+
+   Start: 11:30 PM Nov 20   End: 00:30 AM Nov 20  → WRONG
+   Start: 11:30 PM Nov 20   End: 00:30 AM Nov 21  → CORRECT
+
+3. UTC Validation Rules:
+   Wrong:  20241120T233000Z/20241120T003000Z
+   Right:  20241120T233000Z/20241121T003000Z
+
+4. Validation Steps (MUST FOLLOW IN ORDER):
+   Step 1: Extract and validate start time
+   Step 2: Extract and validate end time
+   Step 3: Compare complete datetime
+   Step 4: If end < start: ADD ONE DAY to end date
+   Step 5: Convert to UTC maintaining sequence
+   Step 6: Verify UTC end > UTC start
+
+STOP AND CHECK:
+- Is end datetime AFTER start datetime?
+- If not, ADD ONE DAY to end date
+- Never proceed without validating sequence
+
 PARAMETERS:
 3. text: Event title with spaces as '+' and encoded special characters
 4. dates: Format as YYYYMMDDTHHmmSSZ/YYYYMMDDTHHmmSSZ (in UTC)
@@ -91,5 +123,29 @@ OUTPUT FORMAT:
 
 ALWAYS ADD (NEVER SUBTRACT) HOURS FOR UTC CONVERSION. ENSURE THE DATE INCREMENTS WHEN UTC TIME CROSSES MIDNIGHT.
 
-Return an empty array if no events are found. Always return as many links as there are events.`
+Return an empty array if no events are found. Always return as many links as there are events.
+
+DEBUGGING OUTPUT REQUIRED:
+You must output your step-by-step validation process in this format:
+
+DEBUG_START
+1. Original text: [paste exact text here]
+2. Extracted times:
+   - Start: [raw start time/date]
+   - End: [raw end time/date]
+3. Initial validation:
+   - Start datetime: [formatted datetime]
+   - End datetime: [formatted datetime]
+   - Is end after start? [Yes/No]
+4. Date adjustment needed? [Yes/No]
+   - If Yes, incrementing end date
+   - New end datetime: [adjusted datetime]
+5. UTC conversion:
+   - Start UTC: [UTC datetime]
+   - End UTC: [UTC datetime]
+   - Final validation: [PASS/FAIL]
+DEBUG_END
+
+Only proceed with calendar link creation if validation passes.
+If validation fails, explain why and return empty array.`
 };
