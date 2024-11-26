@@ -13,9 +13,10 @@ TIMEZONE HANDLING (CRITICAL):
 - Local timezone: ${timezone}
 - For Central Time (CT) to UTC conversion:
   * ADD 6 HOURS to the time (don't subtract)
-  * If the result exceeds midnight:
+  * THIS IS VERY IMPORTANT IF THE RESULT EXCEEDS MIDNIGHT:
     - Increment the date by one day
     - Keep the calculated UTC time
+    - Increment the end date by one day TOO
   * Examples:
     - "7:00 PM CT March 15" → Add 6 hours → "01:00 UTC March 16"
     - "8:00 PM CT March 15" → Add 6 hours → "02:00 UTC March 16"

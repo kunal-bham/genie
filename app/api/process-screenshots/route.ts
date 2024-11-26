@@ -12,6 +12,54 @@ const openai = new OpenAI({
   apiKey: apiKey
 });
 
+function formatDateTime(dateString: string) {
+  try {
+    // Extract components from UTC string format YYYYMMDDTHHmmSSZ
+    const year = dateString.slice(0, 4);
+    const month = dateString.slice(4, 6);
+    const day = dateString.slice(6, 8);
+    const hour = dateString.slice(9, 11);
+    const minute = dateString.slice(11, 13);
+
+    // Create readable format
+    const date = new Date(Date.UTC(
+      parseInt(year),
+      parseInt(month) - 1,
+      parseInt(day),
+      parseInt(hour),
+      parseInt(minute)
+    ));
+
+    return {
+      utc: `${year}-${month}-${day} ${hour}:${minute} UTC`,
+      local: date.toLocaleString(),
+      components: {
+        year, month, day, hour, minute
+      }
+    };
+  } catch (error) {
+    return null;
+  }
+}
+
+// Add this helper function
+function incrementUTCDate(utcString: string): string {
+  // Format: YYYYMMDDTHHmmSSZ
+  const year = parseInt(utcString.slice(0, 4));
+  const month = parseInt(utcString.slice(4, 6)) - 1; // 0-based month
+  const day = parseInt(utcString.slice(6, 8));
+  const time = utcString.slice(9); // Keep the time portion
+
+  const date = new Date(Date.UTC(year, month, day));
+  date.setUTCDate(date.getUTCDate() + 1); // Add one day
+
+  const newDateString = date.toISOString()
+    .slice(0, 10)
+    .replace(/-/g, '');
+
+  return `${newDateString}T${time}`;
+}
+
 export async function POST(request: Request) {
   // Add CORS headers
   const response = NextResponse.next();
@@ -92,21 +140,66 @@ export async function POST(request: Request) {
 
       // Analyze each link
       if (result.links && Array.isArray(result.links)) {
-        result.links.forEach((link: string, index: number) => {
+        result.links = result.links.map((link: string, index: number) => {
           try {
             const url = new URL(link);
-            console.log(`\n🔗 Link ${index + 1} analysis:`, {
-              fullUrl: link,
-              parameters: {
-                text: url.searchParams.get('text'),
-                dates: url.searchParams.get('dates'),
-                timezone: url.searchParams.get('ctz'),
-                details: url.searchParams.get('details'),
-                location: url.searchParams.get('location')
+            const dates = url.searchParams.get('dates')?.split('/');
+            
+            if (dates && dates.length === 2) {
+              const [startUTC, endUTC] = dates;
+              
+              // Check if start is after end
+              if (startUTC > endUTC) {
+                console.log('\n⚠️ Time Sequence Issue Detected:');
+                console.log('Original UTC Start:', startUTC);
+                console.log('Original UTC End:', endUTC);
+                
+                // Fix the end date
+                const correctedEndUTC = incrementUTCDate(endUTC);
+                console.log('Corrected UTC End:', correctedEndUTC);
+                
+                // Update the URL with corrected dates
+                url.searchParams.set('dates', `${startUTC}/${correctedEndUTC}`);
+                
+                // Log the correction
+                console.log('✅ Date Correction Applied');
               }
-            });
+
+              const startFormatted = formatDateTime(startUTC);
+              const endFormatted = formatDateTime(url.searchParams.get('dates')?.split('/')[1] || endUTC);
+
+              console.log(`\n📅 Calendar Event ${index + 1} Details:`);
+              console.log('Title:', decodeURIComponent(url.searchParams.get('text') || ''));
+              
+              console.log('\nStart Time:');
+              console.log('  UTC:', startFormatted?.utc);
+              console.log('  Local:', startFormatted?.local);
+              
+              console.log('\nEnd Time:');
+              console.log('  UTC:', endFormatted?.utc);
+              console.log('  Local:', endFormatted?.local);
+
+              console.log('\nTime Validation:');
+              const finalDates = url.searchParams.get('dates')?.split('/');
+              console.log('  Start < End:', finalDates?.[0] < finalDates?.[1] ? '✅ Valid' : '❌ Invalid');
+              console.log('  Same Day:', finalDates?.[0].slice(0, 8) === finalDates?.[1].slice(0, 8) ? 'Yes' : 'No');
+              console.log('  Duration:', {
+                hours: Math.floor((new Date(endFormatted?.local || '').getTime() - 
+                                 new Date(startFormatted?.local || '').getTime()) / (1000 * 60 * 60)),
+                minutes: Math.floor((new Date(endFormatted?.local || '').getTime() - 
+                                   new Date(startFormatted?.local || '').getTime()) / (1000 * 60)) % 60
+              });
+
+              console.log('\nRaw Parameters:');
+              console.log('  Timezone:', url.searchParams.get('ctz'));
+              console.log('  Final UTC String:', url.searchParams.get('dates'));
+
+              return url.toString();
+            }
+            return link;
           } catch (urlError) {
-            console.error(`❌ Invalid URL in link ${index + 1}:`, link);
+            console.error(`❌ Error analyzing link ${index + 1}:`, urlError);
+            return link;
           }
         });
       }
