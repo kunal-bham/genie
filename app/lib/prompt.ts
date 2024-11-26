@@ -122,5 +122,40 @@ OUTPUT FORMAT:
 
 ALWAYS ADD (NEVER SUBTRACT) HOURS FOR UTC CONVERSION. ENSURE THE DATE INCREMENTS WHEN UTC TIME CROSSES MIDNIGHT.
 
-Return an empty array if no events are found. Always return as many links as there are events.`
+Return an empty array if no events are found. Always return as many links as there are events.
+
+CRITICAL TIME EXTRACTION (MUST DO FIRST):
+1. Find BOTH Start AND End Times:
+   Start Time Patterns:
+   - "starts at [time]"
+   - "beginning [time]"
+   - "[time] on [date]"
+   - "[date] at [time]"
+   
+   End Time Patterns (EQUALLY IMPORTANT):
+   - "ends at [time]"
+   - "until [time]"
+   - "to [time]"
+   - "[time]-[time]"
+   - "ending at [time]"
+
+2. Time Sequence Validation:
+   * BOTH start AND end times must be found
+   * End time MUST be after start time
+   * Examples:
+     "5:30 PM to 6:30 PM" = Valid
+     "7:00 PM - 8:00 PM" = Valid
+     "9:00 PM to 2:00 AM" = Valid (Add 1 day to end)
+     "11:30 PM until 12:30 AM" = Valid (Add 1 day to end)
+
+3. Required Debug Output:
+   TIME_EXTRACTION_DEBUG
+   Found Start: [exact text match]
+   Start Time: [HH:MM AM/PM]
+   Start Date: [Month DD, YYYY]
+   Found End: [exact text match]
+   End Time: [HH:MM AM/PM]
+   End Date: [Month DD, YYYY]
+   END_DEBUG
+`;
 };
