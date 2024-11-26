@@ -28,7 +28,7 @@ CRITICAL UTC CONVERSION STEPS:
 2. ADD 6 hours to get UTC
 3. If the resulting UTC time is past midnight:
    - If the local time is before midnight, keep the current date
-   - If the local time is at or after midnight, increment the date by one day
+   - If the local time is at or after midnight, increment the date by one day. BE SURE TO DO THIS FOR START AND END DATES.
 4. Format as YYYYMMDDTHHmmSSZ
 
 DATE AND TIME RULES:
@@ -81,6 +81,36 @@ EXAMPLE CONVERSIONS:
    Local: March 15, 2:00 PM CT
    UTC: March 15, 20:00 UTC
    Output date: 20240315T200000Z
+
+4. Required Debug Checks:
+  START_VALIDATION
+  1. Raw Input Check:
+     Start: [YYYY-MM-DD HH:MM]
+     End: [YYYY-MM-DD HH:MM]
+     Valid Sequence? [YES/NO]
+
+
+  2. Date Comparison:
+     Start Date: [YYYY-MM-DD]
+     End Date: [YYYY-MM-DD]
+     Valid Order? [YES/NO]
+     Action Taken: [None/Incremented End Date]
+
+
+  3. Time Sequence:
+     24h Start: [HH:MM]
+     24h End: [HH:MM]
+     Valid Sequence? [YES/NO]
+     Action Taken: [None/Adjusted Time]
+
+
+  4. UTC Conversion Check:
+     UTC Start: [UTC datetime]
+     UTC End: [UTC datetime]
+     Valid Sequence? [YES/NO]
+     Final Action: [None/Date Adjusted]
+  END_VALIDATION
+
 
 OUTPUT FORMAT:
 {
