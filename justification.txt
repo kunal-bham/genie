@@ -1,0 +1,23 @@
+Permission Justifications for Calendar Genie Extension
+
+1. activeTab Permission:
+Required to interact with the current tab for screenshot capture functionality. The extension needs this permission to capture the visible content when users click the "Capture Screenshot" button or use the Cmd+Shift+U shortcut.
+
+2. tabs Permission:
+Required to:
+- Open calendar event links in new tabs after processing
+- Query the active tab for screenshot capture
+- Manage tab states during processing
+This permission is crucial for the core functionality of creating calendar events.
+
+3. clipboardRead Permission:
+Essential for reading screenshot data from the clipboard when users copy an image and use the "Paste Screenshot" feature or Cmd+Shift+Y shortcut. This permission is fundamental to the extension's primary functionality.
+
+4. Host Permission (https://calendarg.vercel.app/*):
+Required to:
+- Send screenshot data to the Calendar Genie API for processing
+- Receive processed calendar event links
+- Ensure secure communication with the backend service
+This permission is essential for the core functionality of converting screenshots to calendar events.
+
+The extension requires these permissions to provide its core functionality of converting screenshots of event information into Google Calendar events. Each permission is used minimally and only when explicitly triggered by user actions (clicking buttons or using keyboard shortcuts). 

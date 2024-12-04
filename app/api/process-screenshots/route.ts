@@ -5,7 +5,10 @@ import { getCalendarLinkPrompt } from '../../lib/prompt';
 const apiKey = process.env.OPENAI_API_KEY;
 
 if (!apiKey) {
+  console.error('OPENAI_API_KEY is not defined in environment variables');
   throw new Error('OPENAI_API_KEY is not defined in environment variables');
+} else {
+  console.log('OPENAI_API_KEY is set successfully');
 }
 
 const openai = new OpenAI({
@@ -140,7 +143,7 @@ export async function POST(request: Request) {
 
       // Analyze each link
       if (result.links && Array.isArray(result.links)) {
-        result.links = result.links.map((link: string, index: number) => {
+        result.links.forEach((link: string, index: number) => {
           try {
             const url = new URL(link);
             const dates = url.searchParams.get('dates')?.split('/');
@@ -179,16 +182,14 @@ export async function POST(request: Request) {
               console.log('  UTC:', endFormatted?.utc);
               console.log('  Local:', endFormatted?.local);
 
-              console.log('\nTime Validation:');
+              // Ensure finalDates is defined before accessing
               const finalDates = url.searchParams.get('dates')?.split('/');
-              console.log('  Start < End:', finalDates?.[0] < finalDates?.[1] ? '✅ Valid' : '❌ Invalid');
-              console.log('  Same Day:', finalDates?.[0].slice(0, 8) === finalDates?.[1].slice(0, 8) ? 'Yes' : 'No');
-              console.log('  Duration:', {
-                hours: Math.floor((new Date(endFormatted?.local || '').getTime() - 
-                                 new Date(startFormatted?.local || '').getTime()) / (1000 * 60 * 60)),
-                minutes: Math.floor((new Date(endFormatted?.local || '').getTime() - 
-                                   new Date(startFormatted?.local || '').getTime()) / (1000 * 60)) % 60
-              });
+              if (finalDates && finalDates.length === 2) {
+                console.log('  Start < End:', finalDates[0] < finalDates[1] ? 'Valid' : 'Invalid');
+                console.log('  Same Day:', finalDates[0].slice(0, 8) === finalDates[1].slice(0, 8) ? 'Yes' : 'No');
+              } else {
+                console.log('❌ Invalid date format in finalDates:', finalDates);
+              }
 
               console.log('\nRaw Parameters:');
               console.log('  Timezone:', url.searchParams.get('ctz'));

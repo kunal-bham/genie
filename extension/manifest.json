@@ -4,13 +4,11 @@
   "version": "1.0",
   "permissions": [
     "activeTab",
-    "scripting",
     "tabs",
-    "clipboardRead",
-    "desktopCapture"
+    "clipboardRead"
   ],
   "host_permissions": [
-    "http://localhost:3000/*"
+    "https://calendarg.vercel.app/*"
   ],
   "background": {
     "service_worker": "background.js"

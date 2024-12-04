@@ -74,6 +74,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
+  // Update the API endpoint URL
+  const API_URL = 'https://calendarg.vercel.app/api/process-screenshots';
+
   async function handlePaste() {
     try {
       // Hide any previous error message
@@ -108,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
       formData.append('file', imageBlob, 'screenshot.png');
       formData.append('timezone', Intl.DateTimeFormat().resolvedOptions().timeZone);
 
-      const response = await fetch('http://localhost:3000/api/process-screenshots', {
+      const response = await fetch(API_URL, {
         method: 'POST',
         body: formData,
         headers: {
@@ -185,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
       formData.append('file', imageBlob, 'screenshot.png');
       formData.append('timezone', Intl.DateTimeFormat().resolvedOptions().timeZone);
 
-      const apiResponse = await fetch('http://localhost:3000/api/process-screenshots', {
+      const apiResponse = await fetch(API_URL, {
         method: 'POST',
         body: formData,
         headers: {
