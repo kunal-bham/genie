@@ -10,6 +10,13 @@
   "host_permissions": [
     "https://calendarg.vercel.app/*"
   ],
+  "icons": {
+    "128": "icons/genie.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icons/genie.png"
+  },
   "background": {
     "service_worker": "background.js"
   },
@@ -28,8 +35,5 @@
       },
       "description": "Capture and process screenshot"
     }
-  },
-  "action": {
-    "default_popup": "popup.html"
   }
 } 
