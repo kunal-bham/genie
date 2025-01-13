@@ -9,18 +9,13 @@ export const getCalendarLinkPrompt = (timezone: string) => {
 1. Extract the event information from the provided text.
 2. Use the base URL: \`https://calendar.google.com/calendar/u/0/r/eventedit?\`
 
-TIMEZONE HANDLING (CRITICAL):
-- Local timezone: ${timezone}
-- All times should be in the user's local timezone
+DATE AND TIME RULES:
 - Do not perform any timezone conversions
 - Return dates in YYYYMMDDTHHmmSS format
-
-DATE AND TIME RULES:
 Current Reference:
 - Today: ${currentDate}
 - Current year: ${currentYear}
 - Current month: ${currentMonth}
-- Timezone: ${timezone}
 
 Date Rules:
 - If only day of week mentioned: use next occurrence
@@ -46,9 +41,8 @@ Time Rules:
 PARAMETERS:
 3. text: Event title with spaces as '+' and encoded special characters
 4. dates: Format as YYYYMMDDTHHmmSS/YYYYMMDDTHHmmSS
-5. ctz: ${timezone}
-6. details: Event details with spaces as '+' and encoded special characters
-7. location: Event location with spaces as '+' and encoded special characters
+5. details: Event details with spaces as '+' and encoded special characters
+6. location: Event location with spaces as '+' and encoded special characters
 
 EXAMPLE CONVERSIONS:
 1. Input: "Team Meeting at 7:00 PM on March 15"
@@ -98,7 +92,7 @@ EXAMPLE CONVERSIONS:
 OUTPUT FORMAT:
 {
     "links": [
-        "https://calendar.google.com/calendar/u/0/r/eventedit?text=Example+Event&dates=20240316T010000/20240316T020000&ctz=${timezone}&details=Event+details+here&location=Event+location+here"
+        "https://calendar.google.com/calendar/u/0/r/eventedit?text=Example+Event&dates=20240316T010000/20240316T020000&details=Event+details+here&location=Event+location+here"
     ]
 }
 
