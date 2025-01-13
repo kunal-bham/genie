@@ -11,26 +11,9 @@ export const getCalendarLinkPrompt = (timezone: string) => {
 
 TIMEZONE HANDLING (CRITICAL):
 - Local timezone: ${timezone}
-- For Central Time (CT) to UTC conversion:
-  * ADD 6 HOURS to the time (don't subtract)
-  * THIS IS VERY IMPORTANT IF THE RESULT EXCEEDS MIDNIGHT:
-    - Increment the date by one day
-    - Keep the calculated UTC time
-    - Increment the end date by one day TOO
-  * Examples:
-    - "7:00 PM CT March 15" → Add 6 hours → "01:00 UTC March 16"
-    - "8:00 PM CT March 15" → Add 6 hours → "02:00 UTC March 16"
-    - "9:00 PM CT March 15" → Add 6 hours → "03:00 UTC March 16"
-    - "2:00 PM CT March 15" → Add 6 hours → "20:00 UTC March 15"
-    - "9:00 AM CT March 15" → Add 6 hours → "15:00 UTC March 15"
-
-CRITICAL UTC CONVERSION STEPS:
-1. Take the local time (CT)
-2. ADD 6 hours to get UTC
-3. If the resulting UTC time is past midnight:
-   - If the local time is before midnight, keep the current date
-   - If the local time is at or after midnight, increment the date by one day. BE SURE TO DO THIS FOR START AND END DATES.
-4. Format as YYYYMMDDTHHmmSSZ
+- All times should be in the user's local timezone
+- Do not perform any timezone conversions
+- Return dates in YYYYMMDDTHHmmSS format
 
 DATE AND TIME RULES:
 Current Reference:
@@ -62,26 +45,31 @@ Time Rules:
 
 PARAMETERS:
 3. text: Event title with spaces as '+' and encoded special characters
-4. dates: Format as YYYYMMDDTHHmmSSZ/YYYYMMDDTHHmmSSZ (in UTC)
+4. dates: Format as YYYYMMDDTHHmmSS/YYYYMMDDTHHmmSS
 5. ctz: ${timezone}
 6. details: Event details with spaces as '+' and encoded special characters
 7. location: Event location with spaces as '+' and encoded special characters
 
 EXAMPLE CONVERSIONS:
 1. Input: "Team Meeting at 7:00 PM on March 15"
-   Local: March 15, 7:00 PM CT
-   UTC: March 16, 01:00 UTC
-   Output date: 20240316T010000Z
+   Local: March 15, 7:00 PM
+   Output dates: 20240315T190000/20240315T200000  // No end time given, so add 1 hour
 
 2. Input: "Call at 8:00 PM on March 15"
-   Local: March 15, 8:00 PM CT
-   UTC: March 16, 02:00 UTC
-   Output date: 20240316T020000Z
+   Local: March 15, 8:00 PM
+   Output dates: 20240315T200000/20240315T210000  // No end time given, so add 1 hour
 
-3. Input: "Meeting at 2:00 PM on March 15"
-   Local: March 15, 2:00 PM CT
-   UTC: March 15, 20:00 UTC
-   Output date: 20240315T200000Z
+3. Input: "Meeting at 2:00-3:00 PM on March 15"
+   Local: March 15, 2:00-3:00 PM
+   Output dates: 20240315T140000/20240315T150000  // Explicit end time used
+
+4. Input: "Dinner at 6:30 PM on March 15"
+   Local: March 15, 6:30 PM
+   Output dates: 20240315T183000/20240315T193000  // No end time given, so add 1 hour
+
+5. Input: "Meeting from 11:00 AM to 12:30 PM on March 15"
+   Local: March 15, 11:00 AM - 12:30 PM
+   Output dates: 20240315T110000/20240315T123000  // Explicit end time used
 
 4. Required Debug Checks:
   START_VALIDATION
@@ -104,23 +92,15 @@ EXAMPLE CONVERSIONS:
      Valid Sequence? [YES/NO]
      Action Taken: [None/Adjusted Time]
 
-
-  4. UTC Conversion Check:
-     UTC Start: [UTC datetime]
-     UTC End: [UTC datetime]
-     Valid Sequence? [YES/NO]
-     Final Action: [None/Date Adjusted]
   END_VALIDATION
 
 
 OUTPUT FORMAT:
 {
     "links": [
-        "https://calendar.google.com/calendar/u/0/r/eventedit?text=Example+Event&dates=20240316T010000Z/20240316T020000Z&ctz=${timezone}&details=Event+details+here&location=Event+location+here"
+        "https://calendar.google.com/calendar/u/0/r/eventedit?text=Example+Event&dates=20240316T010000/20240316T020000&ctz=${timezone}&details=Event+details+here&location=Event+location+here"
     ]
 }
-
-ALWAYS ADD (NEVER SUBTRACT) HOURS FOR UTC CONVERSION. ENSURE THE DATE INCREMENTS WHEN UTC TIME CROSSES MIDNIGHT.
 
 Return an empty array if no events are found. Always return as many links as there are events.`
 };
