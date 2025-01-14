@@ -1,0 +1,8 @@
+GenieMobile/
+extension/
+extension.zip
+extension.crx
+README.md
+.git
+.env.local
+.env.*.local 
