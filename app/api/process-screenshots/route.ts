@@ -2,20 +2,7 @@ import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { getCalendarLinkPrompt } from '../../lib/prompt';
 
-const apiKey = process.env.OPENAI_API_KEY;
-
-if (!apiKey) {
-  console.error('OPENAI_API_KEY is not defined in environment variables');
-  throw new Error('OPENAI_API_KEY is not defined in environment variables');
-} else {
-  console.log('OPENAI_API_KEY is set successfully');
-}
-
-const openai = new OpenAI({
-  apiKey: apiKey
-});
-
-function formatDateTime(dateString: string) {
+const formatDateTime = (dateString: string) => {
   try {
     // Extract components from UTC string format YYYYMMDDTHHmmSSZ
     const year = dateString.slice(0, 4);
@@ -43,10 +30,9 @@ function formatDateTime(dateString: string) {
   } catch (error) {
     return null;
   }
-}
+};
 
-// Add this helper function
-function incrementUTCDate(utcString: string): string {
+const incrementUTCDate = (utcString: string): string => {
   // Format: YYYYMMDDTHHmmSSZ
   const year = parseInt(utcString.slice(0, 4));
   const month = parseInt(utcString.slice(4, 6)) - 1; // 0-based month
@@ -61,7 +47,7 @@ function incrementUTCDate(utcString: string): string {
     .replace(/-/g, '');
 
   return `${newDateString}T${time}`;
-}
+};
 
 export async function POST(request: Request) {
   // Add CORS headers
@@ -71,6 +57,19 @@ export async function POST(request: Request) {
   response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
 
   try {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      console.error('OPENAI_API_KEY is not defined in environment variables');
+      return NextResponse.json({ 
+        success: false, 
+        error: 'OpenAI API key is not configured' 
+      }, { status: 500 });
+    }
+
+    const openai = new OpenAI({
+      apiKey: apiKey
+    });
+
     console.log('\n🚀 Starting process-screenshots endpoint');
     const formData = await request.formData();
     const files = formData.getAll('file') as File[];
