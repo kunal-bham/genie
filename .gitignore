@@ -34,4 +34,8 @@ yarn-error.log*
 next-env.d.ts
 
 .zip
-GenieMobile
+# Exclude mobile and extension folders
+GenieMobile/
+extension/
+extension.zip
+extension.crx
