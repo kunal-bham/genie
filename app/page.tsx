@@ -118,7 +118,7 @@ export default function Home() {
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-cloud-white to-golden-lamp">
             Calendar Genie
           </span>
-          <span className="ml-4 animate-bounce inline-block">🧞‍♂️</span>
+          <span className="ml-4 inline-block">🧞‍♂️</span>
         </h1>
         <p className="text-cloud-white text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
           Transform your event screenshots into calendar magic! 
