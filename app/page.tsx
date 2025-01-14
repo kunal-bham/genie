@@ -267,7 +267,15 @@ export default function Home() {
         )}
       </div>
 
-      
+      {/* Footer */}
+      <footer className="mt-16 text-center">
+        <a 
+          href="/privacy" 
+          className="text-cloud-white/80 hover:text-cloud-white text-sm underline decoration-dotted transition-colors duration-300"
+        >
+          Privacy Policy
+        </a>
+      </footer>
     </main>
   );
 }
