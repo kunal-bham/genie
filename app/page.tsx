@@ -270,6 +270,12 @@ export default function Home() {
       {/* Footer */}
       <footer className="mt-16 text-center space-x-6">
         <a 
+          href="/download" 
+          className="text-cloud-white/80 hover:text-cloud-white text-sm underline decoration-dotted transition-colors duration-300"
+        >
+          Download
+        </a>
+        <a 
           href="/privacy" 
           className="text-cloud-white/80 hover:text-cloud-white text-sm underline decoration-dotted transition-colors duration-300"
         >
