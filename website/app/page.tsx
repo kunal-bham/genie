@@ -37,25 +37,46 @@ export default function Home() {
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-4">
         <div className="container mx-auto text-center">
-          <h1 className="text-5xl font-bold mb-6">
-            Your Personal Calendar Assistant
+          <h1 className="text-5xl font-bold mb-4">
+            Calendar Genie
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Calendar Genie helps you manage your schedule effortlessly with AI-powered suggestions and smart organization.
+          <p className="text-2xl text-gray-600 mb-12 max-w-2xl mx-auto">
+            Instantly convert screenshots into calendar events.
           </p>
-          <div className="flex justify-center gap-4">
-            <Link
-              href="#download"
-              className="bg-primary text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-primary/90"
-            >
-              Get Started
-            </Link>
-            <Link
-              href="#learn-more"
-              className="border border-gray-300 px-8 py-3 rounded-lg text-lg font-medium hover:bg-gray-50"
-            >
-              Learn More
-            </Link>
+          
+          {/* Stats Blocks */}
+          <div className="flex justify-center gap-8 mb-12">
+            <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 min-w-[250px] cursor-pointer hover:shadow-md transition-shadow">
+              <div className="text-4xl font-bold text-primary mb-3">1,000+</div>
+              <div className="text-lg text-gray-600">Active Users</div>
+            </div>
+            <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 min-w-[250px] cursor-pointer hover:shadow-md transition-shadow">
+              <div className="text-4xl font-bold text-primary mb-3">10,000+</div>
+              <div className="text-lg text-gray-600">Events Generated</div>
+            </div>
+          </div>
+
+          {/* Try Button */}
+          <div className="mb-8">
+            <button className="bg-primary text-white px-12 py-4 rounded-lg text-xl font-medium hover:bg-primary/90 transition-colors">
+              Try Calendar Genie
+            </button>
+          </div>
+
+          {/* Availability */}
+          <div className="flex justify-center items-center gap-6 text-gray-600">
+            <div className="flex items-center gap-2">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+              <span>iOS App</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+              </svg>
+              <span>Chrome Extension</span>
+            </div>
           </div>
         </div>
       </section>
