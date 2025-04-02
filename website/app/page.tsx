@@ -1,11 +1,13 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
 export default function Home() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   useEffect(() => {
     const video = videoRef.current;
@@ -30,6 +32,30 @@ export default function Home() {
       observer.disconnect();
     };
   }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('loading');
+
+    try {
+      const response = await fetch(process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL!, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      setStatus('success');
+      setEmail('');
+      setTimeout(() => setStatus('idle'), 3000);
+    } catch (error) {
+      console.error('Error:', error);
+      setStatus('error');
+      setTimeout(() => setStatus('idle'), 3000);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-white">
@@ -172,6 +198,40 @@ export default function Home() {
           </div>
         </div>
       </section> */}
+
+      {/* Email Signup Section */}
+      <section className="py-16 px-4 bg-gray-50">
+        <div className="container mx-auto max-w-2xl text-center">
+          <h2 className="text-3xl font-bold mb-4">Stay Updated</h2>
+          <p className="text-gray-600 mb-8 text-lg">
+            Join our mailing list to get notified about new features and updates.
+          </p>
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              className="flex-grow px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/20"
+              required
+              disabled={status === 'loading'}
+            />
+            <button
+              type="submit"
+              className="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+              disabled={status === 'loading'}
+            >
+              {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
+            </button>
+          </form>
+          {status === 'success' && (
+            <p className="mt-4 text-green-600">Thanks for subscribing!</p>
+          )}
+          {status === 'error' && (
+            <p className="mt-4 text-red-600">Something went wrong. Please try again.</p>
+          )}
+        </div>
+      </section>
 
       {/* Footer */}
       <footer className="py-8 border-t">
