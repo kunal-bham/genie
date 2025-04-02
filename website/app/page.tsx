@@ -8,6 +8,7 @@ export default function Home() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -56,6 +57,32 @@ export default function Home() {
       setTimeout(() => setStatus('idle'), 3000);
     }
   };
+
+  const testimonials = [
+    {
+      name: "Sarah M.",
+      role: "Event Coordinator",
+      quote: "Calendar Genie has completely transformed how I manage events. What used to take minutes now takes seconds!"
+    },
+    {
+      name: "Michael R.",
+      role: "Real Estate Agent",
+      quote: "As a real estate agent, I'm always on the go. Calendar Genie makes it so easy to add open houses and client meetings to my calendar."
+    },
+    {
+      name: "Emily T.",
+      role: "Student",
+      quote: "As a busy student, Calendar Genie has been a lifesaver. I can quickly add all my club meetings and academic events without any hassle."
+    }
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <main className="min-h-screen bg-white">
@@ -276,6 +303,115 @@ export default function Home() {
                 <p className="text-gray-600 leading-relaxed">
                   No more manually entering webinar links or meeting details. Focus on your work, not calendar management.
                 </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials & Social Proof Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">Trusted by Users</h2>
+            <p className="text-xl text-gray-600">Join thousands of users who have transformed their calendar management</p>
+          </div>
+
+          
+
+          {/* Testimonials Carousel */}
+          <div className="relative mb-16">
+            <div className="flex overflow-hidden">
+              {testimonials.map((testimonial, index) => (
+                <div
+                  key={index}
+                  className="w-full flex-shrink-0 transition-transform duration-500"
+                  style={{
+                    transform: `translateX(-${currentTestimonial * 100}%)`,
+                  }}
+                >
+                  <div className="bg-white p-8 rounded-xl shadow-sm max-w-2xl mx-auto">
+                    <div className="flex items-center mb-4">
+                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">{testimonial.name}</h4>
+                        <p className="text-gray-600">{testimonial.role}</p>
+                      </div>
+                    </div>
+                    <p className="text-gray-600 italic">{testimonial.quote}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-center gap-2 mt-8">
+              {testimonials.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentTestimonial(index)}
+                  className={`w-3 h-3 rounded-full transition-colors ${
+                    currentTestimonial === index ? 'bg-primary' : 'bg-primary/20 hover:bg-primary/40'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Achievements */}
+          <div className="relative py-20 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 -z-10"></div>
+            <div className="container mx-auto px-4">
+              <h3 className="text-3xl font-bold text-center mb-16">Our Journey</h3>
+              <div className="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-primary/5 rounded-2xl transform group-hover:scale-105 transition-transform duration-300"></div>
+                  <div className="relative bg-white p-8 rounded-2xl shadow-lg border border-primary/10">
+                    <div className="flex items-center gap-6 mb-6">
+                      <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-primary/10">
+                        <Image
+                          src="/wondry.png"
+                          alt="Wond'ry Logo"
+                          width={80}
+                          height={80}
+                          className="object-cover"
+                        />
+                      </div>
+                      <div>
+                        <h4 className="text-xl font-semibold">Wond'ry Ideator Program</h4>
+                        <p className="text-primary">2024 Cohort</p>
+                      </div>
+                    </div>
+                    <p className="text-gray-600">
+                      Selected as one of the most promising startups in Vanderbilt's prestigious innovation program.
+                    </p>
+                  </div>
+                </div>
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-primary/5 rounded-2xl transform group-hover:scale-105 transition-transform duration-300"></div>
+                  <div className="relative bg-white p-8 rounded-2xl shadow-lg border border-primary/10">
+                    <div className="flex items-center gap-6 mb-6">
+                      <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-primary/10">
+                        <Image
+                          src="/vines.png"
+                          alt="Vanderbilt Logo"
+                          width={80}
+                          height={80}
+                          className="object-cover"
+                        />
+                      </div>
+                      <div>
+                        <h4 className="text-xl font-semibold">Vanderbilt 1000 Pitches</h4>
+                        <p className="text-primary">2024 Winner</p>
+                      </div>
+                    </div>
+                    <p className="text-gray-600">
+                      Recognized for innovation and impact in Vanderbilt's premier pitch competition.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
