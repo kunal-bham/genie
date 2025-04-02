@@ -1,8 +1,36 @@
-import React from 'react'
+'use client'
+
+import React, { useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
 export default function Home() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.play();
+          } else {
+            video.pause();
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   return (
     <main className="min-h-screen bg-white">
       {/* Navigation */}
@@ -76,6 +104,43 @@ export default function Home() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
               </svg>
               <span>Chrome Extension</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Text and Video Section */}
+      <section className="py-16 px-4">
+        <div className="container mx-auto">
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Description */}
+            <div className="bg-white p-8 rounded-xl shadow-sm flex flex-col">
+              <h2 className="text-3xl font-bold mb-6">Calendar Genie instantly converts screenshots to calendar events using AI</h2>
+              {/* <div className="space-y-6 text-gray-600 text-lg">
+                <p>
+                  Calendar Genie is your AI-powered assistant that instantly converts screenshots into calendar events. 
+                  Whether it's a meeting invitation, event flyer, or any other time-based information, simply take a screenshot 
+                  and let Calendar Genie do the rest.
+                </p>
+                <p>
+                  Our intelligent system automatically extracts event details, dates, and times, creating perfectly formatted 
+                  calendar entries in seconds. No more manual data entry or copy-pasting - just snap and schedule!
+                </p>
+              </div> */}
+            </div>
+
+            {/* Video */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+              <video
+                ref={videoRef}
+                className="w-full h-full object-cover"
+                controls
+                muted
+                playsInline
+                src="/ChromeExtension.mp4"
+              >
+                Your browser does not support the video tag.
+              </video>
             </div>
           </div>
         </div>
