@@ -72,12 +72,12 @@ export default function Home() {
             <span className="font-semibold text-lg">Calendar Genie</span>
           </div>
           <div className="flex items-center space-x-6">
-            <Link href="#features" className="text-gray-600 hover:text-gray-900">
+            {/* <Link href="#features" className="text-gray-600 hover:text-gray-900">
               Features
             </Link>
             <Link href="#about" className="text-gray-600 hover:text-gray-900">
               About
-            </Link>
+            </Link> */}
             <Link
               href="#download"
               className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90"
@@ -140,8 +140,8 @@ export default function Home() {
         <div className="container mx-auto">
           <div className="grid md:grid-cols-2 gap-8">
             {/* Description */}
-            <div className="bg-white p-8 rounded-xl shadow-sm flex flex-col">
-              <h2 className="text-3xl font-bold mb-6">Calendar Genie instantly converts screenshots to calendar events using AI</h2>
+            <div className="bg-white p-8 rounded-xl shadow-sm flex flex-col items-center justify-center">
+              <h2 className="text-3xl font-bold mb-6 max-w-2xl text-left">Snap a photo, upload it to Calendar Genie, and it's instantly on your calendar.</h2>
               {/* <div className="space-y-6 text-gray-600 text-lg">
                 <p>
                   Calendar Genie is your AI-powered assistant that instantly converts screenshots into calendar events. 
@@ -173,36 +173,36 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      {/* <section id="features" className="py-16 bg-gray-50">
+      <section id="features" className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Key Features</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">Why Calendar Genie?</h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="p-6 bg-white rounded-xl shadow-sm">
-              <h3 className="text-xl font-semibold mb-3">Smart Scheduling</h3>
+              <h3 className="text-xl font-semibold mb-3">Saves Time</h3>
               <p className="text-gray-600">
-                AI-powered suggestions for optimal meeting times based on your preferences and availability.
+                No more manual input required. Just snap a photo and let Calendar Genie do the work.
+              </p>
+            </div>
+            <div className="p-6 bg-white rounded-xl shadow-sm">
+              <h3 className="text-xl font-semibold mb-3">Works with Any Format</h3>
+              <p className="text-gray-600">
+                Handles fliers, emails, social media screenshots, and more. No matter the source, we've got you covered.
               </p>
             </div>
             <div className="p-6 bg-white rounded-xl shadow-sm">
               <h3 className="text-xl font-semibold mb-3">Easy Integration</h3>
               <p className="text-gray-600">
-                Seamlessly connect with your existing calendar apps and tools.
-              </p>
-            </div>
-            <div className="p-6 bg-white rounded-xl shadow-sm">
-              <h3 className="text-xl font-semibold mb-3">Intelligent Reminders</h3>
-              <p className="text-gray-600">
-                Never miss important events with smart notifications and reminders.
+                Available as a Share Extension and Chrome Extension for seamless integration into your workflow.
               </p>
             </div>
           </div>
         </div>
-      </section> */}
+      </section>
 
       {/* Email Signup Section */}
       <section className="py-16 px-4 bg-gray-50">
         <div className="container mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold mb-4">Stay Updated</h2>
+          <h2 className="text-3xl font-bold mb-4">Join the community</h2>
           <p className="text-gray-600 mb-8 text-lg">
             Join our mailing list to get notified about new features and updates.
           </p>
