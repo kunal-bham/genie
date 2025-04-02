@@ -90,13 +90,15 @@ export default function Home() {
       <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-sm z-50 border-b">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Image
-              src="/CalendarGenie.png"
-              alt="Calendar Genie Logo"
-              width={32}
-              height={32}
-            />
-            <span className="font-semibold text-lg">Calendar Genie</span>
+            <Link href="#" className="flex items-center space-x-2">
+              <Image
+                src="/CalendarGenie.png"
+                alt="Calendar Genie Logo"
+                width={32}
+                height={32}
+              />
+              <span className="font-semibold text-lg">Calendar Genie</span>
+            </Link>
           </div>
           <div className="flex items-center space-x-6">
             {/* <Link href="#features" className="text-gray-600 hover:text-gray-900">
@@ -453,9 +455,22 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 border-t">
-        <div className="container mx-auto px-4 text-center text-gray-600">
-          <p>© 2024 Calendar Genie. All rights reserved.</p>
+      <footer className="py-4 border-t">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Image
+                src="/CalendarGenie.png"
+                alt="Calendar Genie Logo"
+                width={24}
+                height={24}
+              />
+              <span className="text-gray-500 text-sm">© 2024 Calendar Genie</span>
+            </div>
+            <div className="text-gray-500 text-sm">
+              All rights reserved
+            </div>
+          </div>
         </div>
       </footer>
     </main>
